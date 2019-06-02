@@ -21,25 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <entt/entt.hpp>
-#include <SFML/Graphics.hpp>
+#pragma once
 
-#include "GlobalDefs.hpp"
-#include "Components.hpp"
-#include "Systems.hpp"
+#include <string>
 
-int main()
+namespace Globals
 {
-
-  std::shared_ptr<sf::RenderWindow> renderWindow = std::make_shared<sf::RenderWindow>( sf::VideoMode( 200, 200 ), "RPG test" );
-
-  SystemRenderer systemRenderer( renderWindow );
-
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
-  while ( systemRenderer.render( shape ) )
-  {
-  }
-
-  return 0;
+  std::string ASSETS_PATH = "C:\\dev\\gamedev.se-q172325\\assets\\";
 }

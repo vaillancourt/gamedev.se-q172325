@@ -21,25 +21,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <entt/entt.hpp>
+#pragma once
+
+#include <memory>
+#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "GlobalDefs.hpp"
-#include "Components.hpp"
-#include "Systems.hpp"
-
-int main()
+struct ComponentPositionWorld
 {
+  sf::Vector2f mPosition;
+};
 
-  std::shared_ptr<sf::RenderWindow> renderWindow = std::make_shared<sf::RenderWindow>( sf::VideoMode( 200, 200 ), "RPG test" );
+struct ComponentSprite
+{
+  std::shared_ptr<sf::Texture> mTexture;
+  std::unique_ptr<sf::Sprite> mSprite;
+};
 
-  SystemRenderer systemRenderer( renderWindow );
-
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
-  while ( systemRenderer.render( shape ) )
+struct ComponentSpriteAnimation
+{
+  struct SequenceElement
   {
-  }
+    sf::Vector2i mSpriteIndex;
+    float mTime;
+  };
+  std::vector<SequenceElement> mSequenceElements;
+  float mTimeInCurrentSequence;
+  int mCurrentSequenceElementIndex;
+};
 
-  return 0;
-}
+struct ComponentWorldMovement
+{
+  sf::Vector2f mOrigin;
+  sf::Vector2f mDestination;
+
+  float mSpeed;
+  float mRatio;
+
+};

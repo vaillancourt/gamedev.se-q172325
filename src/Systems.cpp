@@ -21,25 +21,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <entt/entt.hpp>
-#include <SFML/Graphics.hpp>
 
-#include "GlobalDefs.hpp"
-#include "Components.hpp"
 #include "Systems.hpp"
 
-int main()
+#include <cassert>
+#include <SFML/Graphics.hpp>
+
+SystemRenderer::SystemRenderer( std::shared_ptr<sf::RenderWindow> aRenderWindow )
+  : mRenderWindow ( aRenderWindow )
 {
+}
 
-  std::shared_ptr<sf::RenderWindow> renderWindow = std::make_shared<sf::RenderWindow>( sf::VideoMode( 200, 200 ), "RPG test" );
 
-  SystemRenderer systemRenderer( renderWindow );
+bool 
+SystemRenderer::render( sf::Shape& aShape )
+{
+  if ( !mRenderWindow->isOpen() )
+    return false;
 
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
-  while ( systemRenderer.render( shape ) )
+  sf::Event event;
+  while ( mRenderWindow->pollEvent( event ) )
   {
+    if (event.type == sf::Event::Closed)
+      mRenderWindow->close();
   }
 
-  return 0;
+  mRenderWindow->clear();
+  mRenderWindow->draw( aShape );
+  mRenderWindow->display();
+
+  return true;
 }

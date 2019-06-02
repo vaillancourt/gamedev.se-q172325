@@ -21,25 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <entt/entt.hpp>
-#include <SFML/Graphics.hpp>
+#pragma once
 
-#include "GlobalDefs.hpp"
-#include "Components.hpp"
-#include "Systems.hpp"
+#include <memory>
 
-int main()
+namespace sf
 {
-
-  std::shared_ptr<sf::RenderWindow> renderWindow = std::make_shared<sf::RenderWindow>( sf::VideoMode( 200, 200 ), "RPG test" );
-
-  SystemRenderer systemRenderer( renderWindow );
-
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
-  while ( systemRenderer.render( shape ) )
-  {
-  }
-
-  return 0;
+  class RenderWindow;
+  class View;
+  class Shape;
 }
+
+class SystemRenderer
+{
+public:
+  SystemRenderer( std::shared_ptr<sf::RenderWindow> aRenderWindow );
+
+  bool render( sf::Shape& aShape );
+
+private:
+
+  std::shared_ptr<sf::RenderWindow> mRenderWindow;
+  std::unique_ptr<sf::View>         mView;
+};
