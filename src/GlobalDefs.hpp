@@ -27,5 +27,8 @@
 
 namespace Globals
 {
-  std::string ASSETS_PATH = "C:\\dev\\gamedev.se-q172325\\assets\\";
+  const char* const ASSETS_PATH = "C:\\dev\\gamedev.se-q172325\\assets\\";
+  const char* const TILE_MAP    = "C:\\dev\\gamedev.se-q172325\\assets\\kenney_rpgurbanpack\\Tilemap\\tilemap_packed.png";
+  const char* const MAP         = "C:\\dev\\gamedev.se-q172325\\assets\\map.txt";
+  const int         TILE_SIZE   = 16;
 }

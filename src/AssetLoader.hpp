@@ -23,42 +23,30 @@
  */
 #pragma once
 
-#include <memory>
-#include <SFML/System.hpp>
+#include <array>
+#include <map>
+
 #include <SFML/Graphics.hpp>
 
-struct ComponentPositionWorld
-{
-  sf::Vector2f mPosition;
-};
 
-struct ComponentSprite
+class AssetLoader
 {
-  std::shared_ptr<sf::Texture> mTexture;
-  std::unique_ptr<sf::Sprite> mSprite;
-};
-
-struct ComponentLayerBackground
-{};
-
-struct ComponentSpriteAnimation
-{
-  struct SequenceElement
+public:
+  enum Asset
   {
-    sf::Vector2i mSpriteIndex;
-    float mTime;
+    ASSET_TILEMAP,
+    ASSET_MAP
   };
-  std::vector<SequenceElement> mSequenceElements;
-  float mTimeInCurrentSequence;
-  int mCurrentSequenceElementIndex;
-};
 
-struct ComponentWorldMovement
-{
-  sf::Vector2f mOrigin;
-  sf::Vector2f mDestination;
+  std::shared_ptr<sf::Texture> GetTexture( Asset aAsset );
 
-  float mSpeed;
-  float mRatio;
+  sf::Vector2i GetMapSize( Asset aAsset );
+  std::vector<std::vector<sf::Vector2i>> GetMapData( Asset aAsset );
 
+private:
+
+  void loadMap( Asset aAsset );
+
+  std::map<Asset, std::shared_ptr<sf::Texture>> mTextures;
+  std::map<Asset, std::vector<std::vector<sf::Vector2i>>> mMaps;
 };
