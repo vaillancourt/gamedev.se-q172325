@@ -60,5 +60,4 @@ struct ComponentWorldMovement
 
   float mSpeed;
   float mRatio;
-
 };

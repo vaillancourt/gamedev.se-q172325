@@ -24,12 +24,14 @@
 #pragma once
 
 #include <memory>
+#include <entt/entt.hpp>
+
+class AssetLoader;
 
 namespace sf
 {
   class RenderWindow;
   class View;
-  class Shape;
 }
 
 class SystemRenderer
@@ -37,7 +39,10 @@ class SystemRenderer
 public:
   SystemRenderer( std::shared_ptr<sf::RenderWindow> aRenderWindow );
 
-  bool render( sf::Shape& aShape );
+  bool render( entt::registry& aRegistry );
+
+  void createMap( entt::registry& aRegistry, AssetLoader& aAssetsLoader );
+  void createMainAnimation( entt::registry& aRegistry, AssetLoader& aAssetsLoader );
 
 private:
 
