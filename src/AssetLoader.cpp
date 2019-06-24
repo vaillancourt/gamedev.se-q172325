@@ -121,3 +121,43 @@ AssetLoader::loadMap( Asset aAsset )
   mMaps[aAsset] = map;
 }
 
+std::vector<std::vector<AssetLoader::SequenceElement>> 
+AssetLoader::GetMainAnimations( Asset aAsset )
+{
+  std::vector<std::vector<SequenceElement>> retVal;
+
+  std::string path;
+
+  switch ( aAsset )
+  {
+  case ASSET_MAIN_ANIMATION: path = Globals::ANIMATION;
+  }
+
+  std::ifstream reader( path );
+
+  if ( !reader.is_open() )
+  {
+    assert( false );
+  }
+
+  // We have 4 directions. 
+  for ( int i = 0; i < ComponentCharacterAnimation::NUM_DIRECTIONS; ++i )
+  {
+    std::vector<SequenceElement> thisSequence;
+    int elementsInSequence;
+    reader >> elementsInSequence;
+    for ( int sequenceIndex = 0; sequenceIndex < elementsInSequence; ++sequenceIndex )
+    {
+      SequenceElement sequenceElement;
+
+      reader >> sequenceElement.mSpriteIndex.x >> sequenceElement.mSpriteIndex.y >> sequenceElement.mRatio;
+
+      thisSequence.push_back( sequenceElement );
+    }
+    retVal.push_back( thisSequence );
+  }
+
+  reader.close();
+
+  return retVal;
+}

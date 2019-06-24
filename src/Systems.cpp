@@ -52,11 +52,11 @@ SystemRenderer::render( entt::registry& aRegistry )
 
   mRenderWindow->clear();
 
-  auto view = aRegistry.view<ComponentPositionWorld, ComponentSprite, ComponentLayerBackground>();
-  for(auto entity: view) 
+  auto viewBackground = aRegistry.view<ComponentPositionWorld, ComponentSprite, ComponentLayerBackground>();
+  for(auto entity: viewBackground) 
   {
-    auto& positionWorld = view.get<ComponentPositionWorld>( entity );
-    auto& sprite = view.get<ComponentSprite>( entity );
+    auto& positionWorld = viewBackground.get<ComponentPositionWorld>( entity );
+    auto& sprite = viewBackground.get<ComponentSprite>( entity );
 
     sf::Vector2f sfPosition(
       Globals::TILE_SIZE * positionWorld.mPosition.x,
@@ -66,11 +66,50 @@ SystemRenderer::render( entt::registry& aRegistry )
     mRenderWindow->draw( *sprite.mSprite );
   }
 
+  auto viewMainCharacterAnim = aRegistry.view<ComponentPositionWorld, ComponentSpriteAnimated, ComponentMainCharacter>();
+  for(auto entity: viewMainCharacterAnim) 
+  {
+    auto& positionWorld = viewMainCharacterAnim.get<ComponentPositionWorld>( entity );
+    auto& spriteAnimated = viewMainCharacterAnim.get<ComponentSpriteAnimated>( entity );
+
+    sf::Vector2f sfPosition(
+      Globals::TILE_SIZE * positionWorld.mPosition.x,
+      Globals::TILE_SIZE * positionWorld.mPosition.y );
+    spriteAnimated.mSequenceElements[spriteAnimated.mCurrentSequenceElementIndex]->mSprite->setPosition( sfPosition );
+
+    mRenderWindow->draw( *spriteAnimated.mSequenceElements[spriteAnimated.mCurrentSequenceElementIndex]->mSprite );
+  }
   
   mRenderWindow->display();
 
   return true;
 }
+
+
+void
+SystemRenderer::updateAnimation( float aDt, entt::registry& aRegistry )
+{
+  auto view = aRegistry.view<ComponentSpriteAnimated>();
+  for(auto entity: view) 
+  {
+    auto& spriteAnimated = view.get( entity );
+
+    spriteAnimated.mTimeInCurrentLoop += aDt;
+    if ( spriteAnimated.mTimeInCurrentLoop >= spriteAnimated.mTotalTime )
+      spriteAnimated.mTimeInCurrentLoop -= spriteAnimated.mTotalTime;
+    float currentRatio = spriteAnimated.mTimeInCurrentLoop / spriteAnimated.mTotalTime;
+
+    float ratioAccumulator = 0.0f;
+    for ( std::size_t i = 0u; i < spriteAnimated.mSequenceElements.size(); ++i )
+    {
+      ratioAccumulator += spriteAnimated.mSequenceElements[i]->mRatio;
+      if ( currentRatio < ratioAccumulator )
+        spriteAnimated.mCurrentSequenceElementIndex = i;
+    }
+  }
+  
+}
+
 
 void
 SystemRenderer::createMap( entt::registry& aRegistry, AssetLoader& aAssetsLoader )
@@ -79,7 +118,7 @@ SystemRenderer::createMap( entt::registry& aRegistry, AssetLoader& aAssetsLoader
   auto map     = aAssetsLoader.GetMapData( AssetLoader::ASSET_MAP );
   std::shared_ptr<sf::Texture> texture = aAssetsLoader.GetTexture( AssetLoader::ASSET_TILEMAP );
 
-  int entitiesToCreateCount = mapSize.x * mapSize.y;
+ // int entitiesToCreateCount = mapSize.x * mapSize.y;
 
   for ( int y = 0; y < mapSize.y; ++y )
   {
@@ -108,5 +147,36 @@ SystemRenderer::createMap( entt::registry& aRegistry, AssetLoader& aAssetsLoader
 void 
 SystemRenderer::createMainAnimation( entt::registry& aRegistry, AssetLoader& aAssetsLoader )
 {
+  std::shared_ptr<sf::Texture> texture = aAssetsLoader.GetTexture( AssetLoader::ASSET_TILEMAP );
+  std::vector<std::vector<AssetLoader::SequenceElement>> sequence = aAssetsLoader.GetMainAnimations( AssetLoader::ASSET_MAIN_ANIMATION );
+
+  auto mainEntity = aRegistry.create();
+
+  aRegistry.assign<ComponentPositionWorld>( mainEntity, sf::Vector2f( 20.0f, 20.0f ) );
+  aRegistry.assign<ComponentMainCharacter>( mainEntity );
+  
+  ComponentSpriteAnimated& componentSpriteAnimated = aRegistry.assign<ComponentSpriteAnimated>( mainEntity );
+
+  // We have 4 directions. 
+  for ( int directionIndex = 0; directionIndex < ComponentCharacterAnimation::NUM_DIRECTIONS; ++directionIndex )
+  {
+    for ( std::size_t seqIndex = 0U; seqIndex < sequence[directionIndex].size(); ++seqIndex )
+    {
+      auto seqenceElement = std::make_unique<SequenceElement>();
+
+      seqenceElement->mTexture = texture;
+      seqenceElement->mSprite = std::make_unique<sf::Sprite>();
+      seqenceElement->mSprite->setTexture( *seqenceElement->mTexture );
+      seqenceElement->mSprite->setTextureRect( sf::IntRect( 
+        sequence[directionIndex][seqIndex].mSpriteIndex.x * Globals::TILE_SIZE, 
+        sequence[directionIndex][seqIndex].mSpriteIndex.y * Globals::TILE_SIZE, 
+        Globals::TILE_SIZE, 
+        Globals::TILE_SIZE ) );
+      seqenceElement->mSprite->setOrigin( Globals::TILE_SIZE / 2, Globals::TILE_SIZE / 2 );
+
+      componentSpriteAnimated.mSequenceElements.emplace_back( std::move( seqenceElement ) );
+    }
+  }
+
 
 }

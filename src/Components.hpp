@@ -24,6 +24,7 @@
 #pragma once
 
 #include <memory>
+#include <array>
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
@@ -41,16 +42,27 @@ struct ComponentSprite
 struct ComponentLayerBackground
 {};
 
-struct ComponentSpriteAnimation
+struct SequenceElement
 {
-  struct SequenceElement
-  {
-    sf::Vector2i mSpriteIndex;
-    float mTime;
-  };
-  std::vector<SequenceElement> mSequenceElements;
-  float mTimeInCurrentSequence;
-  int mCurrentSequenceElementIndex;
+  std::shared_ptr<sf::Texture> mTexture;
+  std::unique_ptr<sf::Sprite> mSprite;
+  float mRatio {1.0f};
+  //~SequenceElement();
+  //SequenceElement() = default;
+  //SequenceElement( SequenceElement&& aOther )
+  //{
+  //  mTexture = std::move( aOther.mTexture );
+  //  mSprite = std::move( aOther.mSprite );
+  //  mRatio = aOther.mRatio;
+  //}
+};
+
+struct ComponentSpriteAnimated
+{
+  float mTotalTime { 1.0f };
+  float mTimeInCurrentLoop     { 0.0f };
+  int mCurrentSequenceElementIndex { 0 };
+  std::vector<std::unique_ptr<SequenceElement>> mSequenceElements;
 };
 
 struct ComponentWorldMovement
@@ -58,6 +70,18 @@ struct ComponentWorldMovement
   sf::Vector2f mOrigin;
   sf::Vector2f mDestination;
 
-  float mSpeed;
-  float mRatio;
+  float mSpeed { 0.0f };
+  float mRatio { 0.0f };
+};
+
+struct ComponentMainCharacter
+{};
+
+struct ComponentCharacterAnimation
+{
+  enum Direction
+  {
+    LEFT, DOWN, UP, RIGHT, NUM_DIRECTIONS
+  };
+  std::array<ComponentSpriteAnimated, NUM_DIRECTIONS> mMoveAnimations;
 };

@@ -41,6 +41,8 @@ public:
 
   bool render( entt::registry& aRegistry );
 
+  void updateAnimation( float aDt, entt::registry& aRegistry );
+
   void createMap( entt::registry& aRegistry, AssetLoader& aAssetsLoader );
   void createMainAnimation( entt::registry& aRegistry, AssetLoader& aAssetsLoader );
 

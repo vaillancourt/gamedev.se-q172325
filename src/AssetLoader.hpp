@@ -27,7 +27,7 @@
 #include <map>
 
 #include <SFML/Graphics.hpp>
-
+#include "Components.hpp"
 
 class AssetLoader
 {
@@ -35,13 +35,21 @@ public:
   enum Asset
   {
     ASSET_TILEMAP,
-    ASSET_MAP
+    ASSET_MAP,
+    ASSET_MAIN_ANIMATION
   };
 
   std::shared_ptr<sf::Texture> GetTexture( Asset aAsset );
 
   sf::Vector2i GetMapSize( Asset aAsset );
   std::vector<std::vector<sf::Vector2i>> GetMapData( Asset aAsset );
+
+  struct SequenceElement
+  {
+    sf::Vector2i mSpriteIndex;
+    float mRatio {0.0f};
+  };
+  std::vector<std::vector<SequenceElement>> GetMainAnimations( Asset aAsset );
 
 private:
 

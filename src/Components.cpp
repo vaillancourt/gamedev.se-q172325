@@ -21,42 +21,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-#include <entt/entt.hpp>
-#include <SFML/Graphics.hpp>
-
-#include "GlobalDefs.hpp"
 #include "Components.hpp"
-#include "Systems.hpp"
-#include "AssetLoader.hpp"
 
-
-
-
-
-int main()
-{
-
-  std::shared_ptr<sf::RenderWindow> renderWindow = std::make_shared<sf::RenderWindow>( sf::VideoMode( 200, 200 ), "RPG test" );
-
-  SystemRenderer systemRenderer( renderWindow );
-  auto assetsLoader = std::make_unique<AssetLoader>();
-
-  entt::registry registry;
-
-  systemRenderer.createMap( registry, *assetsLoader );
-  systemRenderer.createMainAnimation( registry, *assetsLoader );
-
-  sf::Clock dtClock;
-  dtClock.restart();
-  bool shouldLoop = true;
-  while ( systemRenderer.render( registry ) )
-  {
-    sf::Time deltaTime = dtClock.restart();
-
-    systemRenderer.updateAnimation( deltaTime.asSeconds(), registry );
-
-    shouldLoop = systemRenderer.render( registry );
-  }
-
-  return 0;
-}
+//SequenceElement::~SequenceElement()
+//{
+//}
